@@ -58,6 +58,8 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 tweetUserId = tweet.user.id_str;
                 filter_level = tweet.filter_level;
                 userName = tweet.user.screen_name;
+                now = +new Date();
+                differenceBetweenRequests = (now - lastRequestDate) / 1000;
                 if (botId === tweetUserId) {
                     return [2 /*return*/];
                 }
@@ -67,8 +69,6 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 if (userName === lastTweetUser) {
                     return [2 /*return*/];
                 }
-                now = +new Date();
-                differenceBetweenRequests = (now - lastRequestDate) / 1000;
                 if (differenceBetweenRequests < DELAY) {
                     return [2 /*return*/];
                 }
