@@ -20,6 +20,7 @@ const stream = bot.stream('statuses/filter', {
 });
 
 let lastRequestDate: number;
+let lastTweetId: string;
 
 const DELAY = 36; // 36 seconds
 
@@ -35,6 +36,10 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
 
   if (botId === tweetUserId) {
     logger.log(`- DEBUG - Ignorando meus RTs`);
+    return;
+  }
+
+  if (tweet.id_str === lastTweetId) {
     return;
   }
 
@@ -56,6 +61,7 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
     });
 
     lastRequestDate = +new Date();
+    lastTweetId = tweetId;
 
     logger.log(
       `- DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
