@@ -43,23 +43,31 @@ require("dotenv/config");
 var twit_1 = __importDefault(require("twit"));
 var environment_1 = __importDefault(require("./config/environment"));
 var logger_1 = __importDefault(require("./logger"));
+var express_1 = __importDefault(require("express"));
+var app = express_1.default();
+var port = process.env.PORT || 3000;
 var bot = new twit_1.default({
     consumer_key: environment_1.default.CONSUMER_KEY,
     consumer_secret: environment_1.default.CONSUMER_SECRET,
     access_token: environment_1.default.ACCESS_TOKEN,
     access_token_secret: environment_1.default.ACCESS_TOKEN_SECRET,
 });
-var stream = bot.stream('statuses/filter', {
-    track: ['saudades', '#SaudadesBot', '@BotSaudades'],
+var limitedStream = bot.stream('statuses/filter', {
+    track: 'saudades',
+});
+var unlimitedStream = bot.stream('statuses/filter', {
+    track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
 });
 var lastRequestDate;
+var lastTweetId;
 var DELAY = 36; // 36 seconds
-stream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var botId, tweetUserId, filter_level, now, differenceBetweenRequests, tweetId, userName, tweetUrl, e_1;
+var botId = environment_1.default.BOT_ID;
+// Stream with delay between RT's
+limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
+    var tweetUserId, filter_level, now, differenceBetweenRequests, tweetId, userName, tweetUrl, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                botId = environment_1.default.BOT_ID;
                 tweetUserId = tweet.user.id_str;
                 filter_level = tweet.filter_level;
                 if (filter_level === 'none') {
@@ -68,6 +76,9 @@ stream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, f
                 }
                 if (botId === tweetUserId) {
                     logger_1.default.log("- DEBUG - Ignorando meus RTs");
+                    return [2 /*return*/];
+                }
+                if (tweet.id_str === lastTweetId) {
                     return [2 /*return*/];
                 }
                 now = +new Date();
@@ -87,8 +98,9 @@ stream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, f
             case 2:
                 _a.sent();
                 lastRequestDate = +new Date();
-                logger_1.default.log("- DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
-                return [3 /*break*/, 4];
+                lastTweetId = tweetId;
+                logger_1.default.log("- LIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
+                return [2 /*return*/];
             case 3:
                 e_1 = _a.sent();
                 logger_1.default.error("- ERROR - " + e_1);
@@ -97,3 +109,43 @@ stream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); });
+// Stream without delay between RT's
+unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
+    var tweetUserId, filter_level, tweetId, userName, tweetUrl, e_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                tweetUserId = tweet.user.id_str;
+                filter_level = tweet.filter_level;
+                if (filter_level === 'none') {
+                    logger_1.default.log('- DEBUG - Tweet filtrado');
+                    return [2 /*return*/];
+                }
+                if (botId === tweetUserId) {
+                    logger_1.default.log("- DEBUG - Ignorando meus RTs");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                tweetId = tweet.id_str;
+                userName = tweet.user.screen_name;
+                tweetUrl = "https://twitter.com/" + userName + "/status/" + tweetId;
+                return [4 /*yield*/, bot.post('statuses/update', {
+                        status: "Saudades n\u00E9 minha filha? " + tweetUrl,
+                    })];
+            case 2:
+                _a.sent();
+                logger_1.default.log("- UNLIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
+                return [2 /*return*/];
+            case 3:
+                e_2 = _a.sent();
+                logger_1.default.error("- ERROR - " + e_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.listen(port, function () {
+    logger_1.default.log("- SERVER - Escutando na porta " + port + " ");
+});

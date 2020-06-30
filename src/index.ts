@@ -30,6 +30,7 @@ const DELAY = 36; // 36 seconds
 
 const botId = config.BOT_ID;
 
+// Stream with delay between RT's
 limitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
@@ -71,11 +72,13 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
     logger.log(
       `- LIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
     );
+    return;
   } catch (e) {
     logger.error(`- ERROR - ${e}`);
   }
 });
 
+// Stream without delay between RT's
 unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
@@ -103,6 +106,7 @@ unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
     logger.log(
       `- UNLIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
     );
+    return;
   } catch (e) {
     logger.error(`- ERROR - ${e}`);
   }
