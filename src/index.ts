@@ -14,6 +14,10 @@ const stream = bot.stream('statuses/filter', {
   track: ['saudades', '#SaudadesBot', '@BotSaudades'],
 });
 
+let lastRequestDate: number;
+
+const DELAY = 36; // 36 seconds
+
 stream.on('tweet', async (tweet: Twitter.Status) => {
   const botId = config.BOT_ID;
   const tweetUserId = tweet.user.id_str;
@@ -29,6 +33,13 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
     return;
   }
 
+  const now = +new Date();
+  const differenceBetweenRequests = (now - lastRequestDate) / 1000;
+
+  if (differenceBetweenRequests < DELAY) {
+    return;
+  }
+
   try {
     const tweetId = tweet.id_str;
     const userName = tweet.user.screen_name;
@@ -39,8 +50,10 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
 
+    lastRequestDate = +new Date();
+
     logger.log(
-      `- DEBUG - [${filter_level}] - ${tweetUrl} retuitato com sucesso`
+      `- DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
     );
   } catch (e) {
     logger.error(`- ERROR - ${e}`);
