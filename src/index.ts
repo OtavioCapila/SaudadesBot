@@ -26,7 +26,7 @@ const unlimitedStream = bot.stream('statuses/filter', {
 let lastRequestDate: number;
 let lastTweetId: string;
 
-const DELAY = 36; // 36 seconds
+const DELAY = 600; // 10 minutes
 
 const botId = config.BOT_ID;
 
