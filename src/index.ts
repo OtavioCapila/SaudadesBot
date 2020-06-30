@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import twit, { Twitter } from 'twit';
 import config from './config/environment';
+import logger from './logger';
 
 const bot = new twit({
   consumer_key: config.CONSUMER_KEY,
@@ -19,12 +20,12 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
   const { filter_level } = tweet;
 
   if (filter_level === 'none') {
-    console.log(`[${new Date().toISOString()}] DEBUG - Tweet filtrado`);
+    logger.log('- DEBUG - Tweet filtrado');
     return;
   }
 
   if (botId === tweetUserId) {
-    console.log(`[${new Date().toISOString()}] DEBUG - Ignorando tweet`);
+    logger.log(`- DEBUG - Ignorando meus RTs`);
     return;
   }
 
@@ -38,10 +39,10 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
 
-    console.log(
-      `[${new Date().toISOString()}] DEBUG - [${filter_level}] - ${tweetUrl} retuitato com sucesso`
+    logger.log(
+      `- DEBUG - [${filter_level}] - ${tweetUrl} retuitato com sucesso`
     );
   } catch (e) {
-    console.error(`[${new Date().toISOString()}] ERROR - ${e}`);
+    logger.error(`- ERROR - ${e}`);
   }
 });
