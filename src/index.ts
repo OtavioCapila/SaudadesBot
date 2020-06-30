@@ -6,6 +6,8 @@ import express from 'express';
 
 const app = express();
 
+const port = process.env.PORT || 3000;
+
 const bot = new twit({
   consumer_key: config.CONSUMER_KEY,
   consumer_secret: config.CONSUMER_SECRET,
@@ -63,4 +65,6 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
   }
 });
 
-app.listen(process.env.PORT || 3000);
+app.listen(port, () => {
+  logger.log(`- SERVER - Escutando na porta ${port} `);
+});
