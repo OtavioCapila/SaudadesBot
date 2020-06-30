@@ -20,6 +20,9 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const { filter_level } = tweet;
   const userName = tweet.user.screen_name;
 
+  const now = +new Date();
+  const differenceBetweenRequests = (now - lastRequestDate) / 1000;
+
   if (botId === tweetUserId) {
     return;
   }
@@ -31,9 +34,6 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
   if (userName === lastTweetUser) {
     return;
   }
-
-  const now = +new Date();
-  const differenceBetweenRequests = (now - lastRequestDate) / 1000;
 
   if (differenceBetweenRequests < DELAY) {
     return;
