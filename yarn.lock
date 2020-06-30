@@ -524,6 +524,11 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
+
 duplexer3@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
@@ -1604,6 +1609,11 @@ tough-cookie@~2.5.0:
   dependencies:
     psl "^1.1.28"
     punycode "^2.1.1"
+
+ts-assert-exists@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ts-assert-exists/-/ts-assert-exists-1.0.5.tgz#1597a9c6fd43af23f36a9354c6ad3be622fa602e"
+  integrity sha512-ntJ2otjpsxn/kNGaW0233Eeif+wGfQBhbCSpOBW9MROYyatrdOYLltPhsj4AHQB07SAkHd3gEELZ61mMSW4J4w==
 
 ts-node@^8.10.2:
   version "8.10.2"
