@@ -17,7 +17,6 @@ unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const userName = tweet.user.screen_name;
 
   if (botId === tweetUserId) {
-    logger.log(`- DEBUG - Ignorando meus RTs`);
     return;
   }
 
