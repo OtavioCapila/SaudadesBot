@@ -60,25 +60,25 @@ var unlimitedStream = bot.stream('statuses/filter', {
 });
 var lastRequestDate;
 var lastTweetId;
-var DELAY = 36; // 36 seconds
+var lastTweetUser;
+var DELAY = 3600; // 10 minutes
 var botId = environment_1.default.BOT_ID;
 // Stream with delay between RT's
 limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var tweetUserId, filter_level, now, differenceBetweenRequests, tweetId, userName, tweetUrl, e_1;
+    var tweetUserId, filter_level, userName, now, differenceBetweenRequests, tweetId, tweetUrl, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 tweetUserId = tweet.user.id_str;
                 filter_level = tweet.filter_level;
-                if (filter_level === 'none') {
-                    logger_1.default.log('- DEBUG - Tweet filtrado');
-                    return [2 /*return*/];
-                }
+                userName = tweet.user.screen_name;
                 if (botId === tweetUserId) {
-                    logger_1.default.log("- DEBUG - Ignorando meus RTs");
                     return [2 /*return*/];
                 }
                 if (tweet.id_str === lastTweetId) {
+                    return [2 /*return*/];
+                }
+                if (userName === lastTweetUser) {
                     return [2 /*return*/];
                 }
                 now = +new Date();
@@ -90,7 +90,6 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 tweetId = tweet.id_str;
-                userName = tweet.user.screen_name;
                 tweetUrl = "https://twitter.com/" + userName + "/status/" + tweetId;
                 return [4 /*yield*/, bot.post('statuses/update', {
                         status: "Saudades n\u00E9 minha filha? " + tweetUrl,
@@ -99,6 +98,7 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 _a.sent();
                 lastRequestDate = +new Date();
                 lastTweetId = tweetId;
+                lastTweetUser = userName;
                 logger_1.default.log("- LIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
                 return [2 /*return*/];
             case 3:
@@ -111,12 +111,13 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
 }); });
 // Stream without delay between RT's
 unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var tweetUserId, filter_level, tweetId, userName, tweetUrl, e_2;
+    var tweetUserId, filter_level, userName, tweetId, tweetUrl, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 tweetUserId = tweet.user.id_str;
                 filter_level = tweet.filter_level;
+                userName = tweet.user.screen_name;
                 if (filter_level === 'none') {
                     logger_1.default.log('- DEBUG - Tweet filtrado');
                     return [2 /*return*/];
@@ -125,17 +126,20 @@ unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, 
                     logger_1.default.log("- DEBUG - Ignorando meus RTs");
                     return [2 /*return*/];
                 }
+                if (userName === lastTweetUser) {
+                    return [2 /*return*/];
+                }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 tweetId = tweet.id_str;
-                userName = tweet.user.screen_name;
                 tweetUrl = "https://twitter.com/" + userName + "/status/" + tweetId;
                 return [4 /*yield*/, bot.post('statuses/update', {
                         status: "Saudades n\u00E9 minha filha? " + tweetUrl,
                     })];
             case 2:
                 _a.sent();
+                lastTweetUser = userName;
                 logger_1.default.log("- UNLIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
                 return [2 /*return*/];
             case 3:

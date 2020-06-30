@@ -25,8 +25,9 @@ const unlimitedStream = bot.stream('statuses/filter', {
 
 let lastRequestDate: number;
 let lastTweetId: string;
+let lastTweetUser: string;
 
-const DELAY = 600; // 10 minutes
+const DELAY = 3600; // 10 minutes
 
 const botId = config.BOT_ID;
 
@@ -34,18 +35,17 @@ const botId = config.BOT_ID;
 limitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
-
-  if (filter_level === 'none') {
-    logger.log('- DEBUG - Tweet filtrado');
-    return;
-  }
+  const userName = tweet.user.screen_name;
 
   if (botId === tweetUserId) {
-    logger.log(`- DEBUG - Ignorando meus RTs`);
     return;
   }
 
   if (tweet.id_str === lastTweetId) {
+    return;
+  }
+
+  if (userName === lastTweetUser) {
     return;
   }
 
@@ -58,7 +58,6 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
 
   try {
     const tweetId = tweet.id_str;
-    const userName = tweet.user.screen_name;
 
     const tweetUrl = `https://twitter.com/${userName}/status/${tweetId}`;
 
@@ -68,6 +67,7 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
 
     lastRequestDate = +new Date();
     lastTweetId = tweetId;
+    lastTweetUser = userName;
 
     logger.log(
       `- LIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
@@ -82,6 +82,7 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
 unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
+  const userName = tweet.user.screen_name;
 
   if (filter_level === 'none') {
     logger.log('- DEBUG - Tweet filtrado');
@@ -93,15 +94,20 @@ unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
     return;
   }
 
+  if (userName === lastTweetUser) {
+    return;
+  }
+
   try {
     const tweetId = tweet.id_str;
-    const userName = tweet.user.screen_name;
 
     const tweetUrl = `https://twitter.com/${userName}/status/${tweetId}`;
 
     await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
+
+    lastTweetUser = userName;
 
     logger.log(
       `- UNLIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
