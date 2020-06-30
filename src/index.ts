@@ -20,7 +20,7 @@ const limitedStream = bot.stream('statuses/filter', {
 });
 
 const unlimitedStream = bot.stream('statuses/filter', {
-  track: ['#SaudadesBot', '@BotSaudades'],
+  track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
 });
 
 let lastRequestDate: number;
