@@ -15,8 +15,12 @@ const bot = new twit({
   access_token_secret: config.ACCESS_TOKEN_SECRET,
 });
 
-const stream = bot.stream('statuses/filter', {
-  track: ['saudades', '#SaudadesBot', '@BotSaudades'],
+const limitedStream = bot.stream('statuses/filter', {
+  track: 'saudades',
+});
+
+const unlimitedStream = bot.stream('statuses/filter', {
+  track: ['#SaudadesBot', '@BotSaudades'],
 });
 
 let lastRequestDate: number;
@@ -24,8 +28,9 @@ let lastTweetId: string;
 
 const DELAY = 36; // 36 seconds
 
-stream.on('tweet', async (tweet: Twitter.Status) => {
-  const botId = config.BOT_ID;
+const botId = config.BOT_ID;
+
+limitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
 
@@ -64,7 +69,39 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
     lastTweetId = tweetId;
 
     logger.log(
-      `- DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
+      `- LIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
+    );
+  } catch (e) {
+    logger.error(`- ERROR - ${e}`);
+  }
+});
+
+unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
+  const tweetUserId = tweet.user.id_str;
+  const { filter_level } = tweet;
+
+  if (filter_level === 'none') {
+    logger.log('- DEBUG - Tweet filtrado');
+    return;
+  }
+
+  if (botId === tweetUserId) {
+    logger.log(`- DEBUG - Ignorando meus RTs`);
+    return;
+  }
+
+  try {
+    const tweetId = tweet.id_str;
+    const userName = tweet.user.screen_name;
+
+    const tweetUrl = `https://twitter.com/${userName}/status/${tweetId}`;
+
+    await bot.post('statuses/update', {
+      status: `Saudades né minha filha? ${tweetUrl}`,
+    });
+
+    logger.log(
+      `- UNLIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
     );
   } catch (e) {
     logger.error(`- ERROR - ${e}`);
