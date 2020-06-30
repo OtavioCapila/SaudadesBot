@@ -2,6 +2,9 @@ import 'dotenv/config';
 import twit, { Twitter } from 'twit';
 import config from './config/environment';
 import logger from './logger';
+import express from 'express';
+
+const app = express();
 
 const bot = new twit({
   consumer_key: config.CONSUMER_KEY,
@@ -59,3 +62,5 @@ stream.on('tweet', async (tweet: Twitter.Status) => {
     logger.error(`- ERROR - ${e}`);
   }
 });
+
+app.listen(process.env.PORT || 3000);

@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "ts-assert-exists": "^1.0.5",
     "twit": "^2.2.11"
   },
   "devDependencies": {
+    "@types/express": "^4.17.6",
     "@types/node": "^14.0.14",
     "@types/twit": "^2.2.24",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
