@@ -5,6 +5,7 @@ import bot from '../bot';
 
 const limitedStream = bot.stream('statuses/filter', {
   track: 'saudades',
+  result_type: 'recent',
 });
 
 let lastRequestDate: number;
