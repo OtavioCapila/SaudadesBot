@@ -11,7 +11,9 @@ let lastRequestDate: number;
 let lastTweetId: string;
 let lastTweetUser: string;
 
-const DELAY = 3600; // 1 hour
+const delayBetweenTweets = Number(config.DELAY);
+
+logger.log(`- DEBUG - Delay de ${delayBetweenTweets} segundos`);
 
 const botId = config.BOT_ID;
 
@@ -35,7 +37,7 @@ limitedStream.on('tweet', async (tweet: Twitter.Status) => {
     return;
   }
 
-  if (differenceBetweenRequests < DELAY) {
+  if (differenceBetweenRequests < delayBetweenTweets) {
     return;
   }
 

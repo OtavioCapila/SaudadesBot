@@ -6,4 +6,5 @@ export default {
   ACCESS_TOKEN: assertExists(process.env.ACCESS_TOKEN),
   ACCESS_TOKEN_SECRET: assertExists(process.env.ACCESS_TOKEN_SECRET),
   BOT_ID: assertExists(process.env.BOT_ID),
+  DELAY: assertExists(process.env.DELAY),
 };

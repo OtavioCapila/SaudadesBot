@@ -48,7 +48,8 @@ var limitedStream = bot_1.default.stream('statuses/filter', {
 var lastRequestDate;
 var lastTweetId;
 var lastTweetUser;
-var DELAY = 3600; // 1 hour
+var delayBetweenTweets = Number(environment_1.default.DELAY);
+logger_1.default.log("- DEBUG - Delay de " + delayBetweenTweets + " segundos");
 var botId = environment_1.default.BOT_ID;
 limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
     var tweetUserId, filter_level, userName, now, differenceBetweenRequests, tweetId, tweetUrl, e_1;
@@ -69,7 +70,7 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 if (userName === lastTweetUser) {
                     return [2 /*return*/];
                 }
-                if (differenceBetweenRequests < DELAY) {
+                if (differenceBetweenRequests < delayBetweenTweets) {
                     return [2 /*return*/];
                 }
                 _a.label = 1;

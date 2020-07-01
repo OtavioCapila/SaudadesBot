@@ -10,4 +10,5 @@ exports.default = {
     ACCESS_TOKEN: ts_assert_exists_1.default(process.env.ACCESS_TOKEN),
     ACCESS_TOKEN_SECRET: ts_assert_exists_1.default(process.env.ACCESS_TOKEN_SECRET),
     BOT_ID: ts_assert_exists_1.default(process.env.BOT_ID),
+    DELAY: ts_assert_exists_1.default(process.env.DELAY),
 };
