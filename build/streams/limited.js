@@ -44,6 +44,7 @@ var logger_1 = __importDefault(require("../logger"));
 var bot_1 = __importDefault(require("../bot"));
 var limitedStream = bot_1.default.stream('statuses/filter', {
     track: 'saudades',
+    result_type: 'recent',
 });
 var lastRequestDate;
 var lastTweetId;
