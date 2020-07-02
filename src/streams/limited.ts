@@ -1,4 +1,4 @@
-import { Twitter } from 'twit';
+import { UpdatedTwitterStatus } from '../types';
 import config from './../config/environment';
 import logger from '../logger';
 import bot from '../bot';
@@ -18,13 +18,28 @@ logger.log(`- DEBUG - Delay de ${delayBetweenTweets} segundos`);
 
 const botId = config.BOT_ID;
 
-limitedStream.on('tweet', async (tweet: Twitter.Status) => {
+limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
   const tweetUserId = tweet.user.id_str;
   const { filter_level } = tweet;
   const userName = tweet.user.screen_name;
 
   const now = +new Date();
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
+
+  if (tweet.is_quote_status) {
+    logger.log(`- LIMITED STREAM - DEBUG - Is quote status`);
+    return;
+  }
+
+  if (tweet.possibly_sensitive) {
+    logger.log(`- LIMITED STREAM - DEBUG - Is possibly sensitive`);
+    return;
+  }
+
+  if (tweet.in_reply_to_status_id) {
+    logger.log(`- LIMITED STREAM - DEBUG - Is a reply to another status`);
+    return;
+  }
 
   if (botId === tweetUserId) {
     return;
