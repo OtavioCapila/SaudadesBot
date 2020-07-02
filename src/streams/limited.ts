@@ -26,11 +26,6 @@ limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
   const now = +new Date();
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
 
-  if (tweet.is_quote_status) {
-    logger.log(`- LIMITED STREAM - DEBUG - Is quote status`);
-    return;
-  }
-
   if (tweet.possibly_sensitive) {
     logger.log(`- LIMITED STREAM - DEBUG - Is possibly sensitive`);
     return;

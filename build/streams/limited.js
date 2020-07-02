@@ -62,10 +62,6 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 userName = tweet.user.screen_name;
                 now = +new Date();
                 differenceBetweenRequests = (now - lastRequestDate) / 1000;
-                if (tweet.is_quote_status) {
-                    logger_1.default.log("- LIMITED STREAM - DEBUG - Is quote status");
-                    return [2 /*return*/];
-                }
                 if (tweet.possibly_sensitive) {
                     logger_1.default.log("- LIMITED STREAM - DEBUG - Is possibly sensitive");
                     return [2 /*return*/];
