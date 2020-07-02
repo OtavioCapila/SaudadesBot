@@ -55,15 +55,12 @@ unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, 
                 user = tweet.user;
                 tweetUserId = user.id_str, tweetUserName = user.screen_name;
                 if (tweet.is_quote_status) {
-                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is quote status");
                     return [2 /*return*/];
                 }
                 if (tweet.possibly_sensitive) {
-                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is possibly sensitive");
                     return [2 /*return*/];
                 }
                 if (tweet.in_reply_to_status_id) {
-                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is a reply to another status");
                     return [2 /*return*/];
                 }
                 if (tweetUserId === botId) {

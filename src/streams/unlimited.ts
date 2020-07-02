@@ -16,17 +16,14 @@ unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
   const { id_str: tweetUserId, screen_name: tweetUserName } = user;
 
   if (tweet.is_quote_status) {
-    logger.log(`- UNLIMITED STREAM - DEBUG - Is quote status`);
     return;
   }
 
   if (tweet.possibly_sensitive) {
-    logger.log(`- UNLIMITED STREAM - DEBUG - Is possibly sensitive`);
     return;
   }
 
   if (tweet.in_reply_to_status_id) {
-    logger.log(`- UNLIMITED STREAM - DEBUG - Is a reply to another status`);
     return;
   }
 

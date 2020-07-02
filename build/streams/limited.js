@@ -63,11 +63,9 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 now = +new Date();
                 differenceBetweenRequests = (now - lastRequestDate) / 1000;
                 if (tweet.possibly_sensitive) {
-                    logger_1.default.log("- LIMITED STREAM - DEBUG - Is possibly sensitive");
                     return [2 /*return*/];
                 }
                 if (tweet.in_reply_to_status_id) {
-                    logger_1.default.log("- LIMITED STREAM - DEBUG - Is a reply to another status");
                     return [2 /*return*/];
                 }
                 if (botId === tweetUserId) {

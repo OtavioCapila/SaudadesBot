@@ -27,12 +27,10 @@ limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
 
   if (tweet.possibly_sensitive) {
-    logger.log(`- LIMITED STREAM - DEBUG - Is possibly sensitive`);
     return;
   }
 
   if (tweet.in_reply_to_status_id) {
-    logger.log(`- LIMITED STREAM - DEBUG - Is a reply to another status`);
     return;
   }
 
