@@ -1,12 +1,7 @@
-import { Twitter } from 'twit';
+import { UpdatedTwitterStatus } from '../types';
 import config from './../config/environment';
 import logger from '../logger';
 import bot from '../bot';
-
-type UpdatedTwitterStatus = Twitter.Status & {
-  is_quote_status: boolean;
-  possibly_sensitive?: boolean;
-};
 
 const unlimitedStream = bot.stream('statuses/filter', {
   track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
