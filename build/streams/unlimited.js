@@ -48,31 +48,42 @@ var unlimitedStream = bot_1.default.stream('statuses/filter', {
 var botId = environment_1.default.BOT_ID;
 var lastTweetUser;
 unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var tweetUserId, filter_level, userName, tweetId, tweetUrl, e_1;
+    var user, tweetUserId, tweetUserName, tweetId, tweetUrl, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                tweetUserId = tweet.user.id_str;
-                filter_level = tweet.filter_level;
-                userName = tweet.user.screen_name;
-                if (botId === tweetUserId) {
+                user = tweet.user;
+                tweetUserId = user.id_str, tweetUserName = user.screen_name;
+                if (tweet.is_quote_status) {
+                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is quote status");
                     return [2 /*return*/];
                 }
-                if (userName === lastTweetUser) {
+                if (tweet.possibly_sensitive) {
+                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is possibly sensitive");
+                    return [2 /*return*/];
+                }
+                if (tweet.in_reply_to_status_id) {
+                    logger_1.default.log("- UNLIMITED STREAM - DEBUG - Is a reply to another status");
+                    return [2 /*return*/];
+                }
+                if (tweetUserId === botId) {
+                    return [2 /*return*/];
+                }
+                if (tweetUserName === lastTweetUser) {
                     return [2 /*return*/];
                 }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 tweetId = tweet.id_str;
-                tweetUrl = "https://twitter.com/" + userName + "/status/" + tweetId;
+                tweetUrl = "https://twitter.com/" + tweetUserName + "/status/" + tweetId;
                 return [4 /*yield*/, bot_1.default.post('statuses/update', {
                         status: "Saudades n\u00E9 minha filha? " + tweetUrl,
                     })];
             case 2:
                 _a.sent();
-                lastTweetUser = userName;
-                logger_1.default.log("- UNLIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
+                lastTweetUser = tweetUserName;
+                logger_1.default.log("- UNLIMITED STREAM - DEBUG - " + tweetUrl + " tweet feito com sucesso");
                 return [2 /*return*/];
             case 3:
                 e_1 = _a.sent();
