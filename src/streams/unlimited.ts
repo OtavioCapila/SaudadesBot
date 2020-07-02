@@ -5,24 +5,34 @@ import bot from '../bot';
 
 const unlimitedStream = bot.stream('statuses/filter', {
   track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
+  result_type: 'recent',
 });
 
 const botId = config.BOT_ID;
 
-const delay = 600; // 10 minutes
+const delay = 1200; // 20 minutes
 
 let lastRequestDate: number;
 let lastTweetUser: string;
 
 unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
-  const { user } = tweet;
+  const { user, id_str: tweetId } = tweet;
   const { id_str: tweetUserId, screen_name: tweetUserName } = user;
 
-  const now = +new Date();
+  const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
 
+  const now = +new Date();
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
 
   if (differenceBetweenRequests < delay) {
+    return;
+  }
+
+  if (tweetUserId === botId) {
+    return;
+  }
+
+  if (tweetUserName === lastTweetUser) {
     return;
   }
 
@@ -38,19 +48,7 @@ unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
     return;
   }
 
-  if (tweetUserId === botId) {
-    return;
-  }
-
-  if (tweetUserName === lastTweetUser) {
-    return;
-  }
-
   try {
-    const tweetId = tweet.id_str;
-
-    const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
-
     await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });

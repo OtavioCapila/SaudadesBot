@@ -8,24 +8,37 @@ const limitedStream = bot.stream('statuses/filter', {
   result_type: 'recent',
 });
 
+const delayBetweenTweets = Number(config.DELAY);
+const botId = config.BOT_ID;
+
 let lastRequestDate: number;
 let lastTweetId: string;
 let lastTweetUser: string;
 
-const delayBetweenTweets = Number(config.DELAY);
-
 logger.log(`- DEBUG - Delay de ${delayBetweenTweets} segundos`);
 
-const botId = config.BOT_ID;
-
 limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
-  const { user } = tweet;
+  const { user, id_str: tweetId } = tweet;
   const { id_str: tweetUserId, screen_name: tweetUserName } = user;
+
+  const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
 
   const now = +new Date();
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
 
   if (differenceBetweenRequests < delayBetweenTweets) {
+    return;
+  }
+
+  if (tweetUserId === botId) {
+    return;
+  }
+
+  if (tweetId === lastTweetId) {
+    return;
+  }
+
+  if (tweetUserName === lastTweetUser) {
     return;
   }
 
@@ -37,22 +50,8 @@ limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
     return;
   }
 
-  if (botId === tweetUserId) {
-    return;
-  }
-
-  if (tweet.id_str === lastTweetId) {
-    return;
-  }
-
-  if (tweetUserName === lastTweetUser) {
-    return;
-  }
-
   try {
-    const tweetId = tweet.id_str;
-
-    const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
+    // await bot.post('favorites/create', { id: tweetId });
 
     await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
