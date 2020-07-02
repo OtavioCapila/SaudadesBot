@@ -3,6 +3,11 @@ import config from './../config/environment';
 import logger from '../logger';
 import bot from '../bot';
 
+type UpdatedTwitterStatus = Twitter.Status & {
+  is_quote_status: boolean;
+  possibly_sensitive?: boolean;
+};
+
 const unlimitedStream = bot.stream('statuses/filter', {
   track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
 });
@@ -11,32 +16,46 @@ const botId = config.BOT_ID;
 
 let lastTweetUser: string;
 
-unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
-  const tweetUserId = tweet.user.id_str;
-  const { filter_level } = tweet;
-  const userName = tweet.user.screen_name;
+unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
+  const { user } = tweet;
+  const { id_str: tweetUserId, screen_name: tweetUserName } = user;
 
-  if (botId === tweetUserId) {
+  if (tweet.is_quote_status) {
+    logger.log(`- UNLIMITED STREAM - DEBUG - Is quote status`);
     return;
   }
 
-  if (userName === lastTweetUser) {
+  if (tweet.possibly_sensitive) {
+    logger.log(`- UNLIMITED STREAM - DEBUG - Is possibly sensitive`);
+    return;
+  }
+
+  if (tweet.in_reply_to_status_id) {
+    logger.log(`- UNLIMITED STREAM - DEBUG - Is a reply to another status`);
+    return;
+  }
+
+  if (tweetUserId === botId) {
+    return;
+  }
+
+  if (tweetUserName === lastTweetUser) {
     return;
   }
 
   try {
     const tweetId = tweet.id_str;
 
-    const tweetUrl = `https://twitter.com/${userName}/status/${tweetId}`;
+    const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
 
     await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
 
-    lastTweetUser = userName;
+    lastTweetUser = tweetUserName;
 
     logger.log(
-      `- UNLIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
+      `- UNLIMITED STREAM - DEBUG - ${tweetUrl} tweet feito com sucesso`
     );
     return;
   } catch (e) {
