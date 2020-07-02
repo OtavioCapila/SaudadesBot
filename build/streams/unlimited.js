@@ -46,14 +46,21 @@ var unlimitedStream = bot_1.default.stream('statuses/filter', {
     track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
 });
 var botId = environment_1.default.BOT_ID;
+var delay = 600; // 10 minutes
+var lastRequestDate;
 var lastTweetUser;
 unlimitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, tweetUserId, tweetUserName, tweetId, tweetUrl, e_1;
+    var user, tweetUserId, tweetUserName, now, differenceBetweenRequests, tweetId, tweetUrl, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 user = tweet.user;
                 tweetUserId = user.id_str, tweetUserName = user.screen_name;
+                now = +new Date();
+                differenceBetweenRequests = (now - lastRequestDate) / 1000;
+                if (differenceBetweenRequests < delay) {
+                    return [2 /*return*/];
+                }
                 if (tweet.is_quote_status) {
                     return [2 /*return*/];
                 }

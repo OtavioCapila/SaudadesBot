@@ -9,11 +9,22 @@ const unlimitedStream = bot.stream('statuses/filter', {
 
 const botId = config.BOT_ID;
 
+const delay = 600; // 10 minutes
+
+let lastRequestDate: number;
 let lastTweetUser: string;
 
 unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
   const { user } = tweet;
   const { id_str: tweetUserId, screen_name: tweetUserName } = user;
+
+  const now = +new Date();
+
+  const differenceBetweenRequests = (now - lastRequestDate) / 1000;
+
+  if (differenceBetweenRequests < delay) {
+    return;
+  }
 
   if (tweet.is_quote_status) {
     return;

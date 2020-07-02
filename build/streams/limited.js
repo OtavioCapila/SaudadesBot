@@ -53,15 +53,17 @@ var delayBetweenTweets = Number(environment_1.default.DELAY);
 logger_1.default.log("- DEBUG - Delay de " + delayBetweenTweets + " segundos");
 var botId = environment_1.default.BOT_ID;
 limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, void 0, function () {
-    var tweetUserId, filter_level, userName, now, differenceBetweenRequests, tweetId, tweetUrl, e_1;
+    var user, tweetUserId, tweetUserName, now, differenceBetweenRequests, tweetId, tweetUrl, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                tweetUserId = tweet.user.id_str;
-                filter_level = tweet.filter_level;
-                userName = tweet.user.screen_name;
+                user = tweet.user;
+                tweetUserId = user.id_str, tweetUserName = user.screen_name;
                 now = +new Date();
                 differenceBetweenRequests = (now - lastRequestDate) / 1000;
+                if (differenceBetweenRequests < delayBetweenTweets) {
+                    return [2 /*return*/];
+                }
                 if (tweet.possibly_sensitive) {
                     return [2 /*return*/];
                 }
@@ -74,17 +76,14 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 if (tweet.id_str === lastTweetId) {
                     return [2 /*return*/];
                 }
-                if (userName === lastTweetUser) {
-                    return [2 /*return*/];
-                }
-                if (differenceBetweenRequests < delayBetweenTweets) {
+                if (tweetUserName === lastTweetUser) {
                     return [2 /*return*/];
                 }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 tweetId = tweet.id_str;
-                tweetUrl = "https://twitter.com/" + userName + "/status/" + tweetId;
+                tweetUrl = "https://twitter.com/" + tweetUserName + "/status/" + tweetId;
                 return [4 /*yield*/, bot_1.default.post('statuses/update', {
                         status: "Saudades n\u00E9 minha filha? " + tweetUrl,
                     })];
@@ -92,8 +91,8 @@ limitedStream.on('tweet', function (tweet) { return __awaiter(void 0, void 0, vo
                 _a.sent();
                 lastRequestDate = +new Date();
                 lastTweetId = tweetId;
-                lastTweetUser = userName;
-                logger_1.default.log("- LIMITED STREAM - DEBUG - [" + filter_level + "] - " + tweetUrl + " tweet feito com sucesso");
+                lastTweetUser = tweetUserName;
+                logger_1.default.log("- LIMITED STREAM - DEBUG - " + tweetUrl + " tweet feito com sucesso");
                 return [2 /*return*/];
             case 3:
                 e_1 = _a.sent();

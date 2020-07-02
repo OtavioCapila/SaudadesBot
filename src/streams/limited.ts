@@ -19,12 +19,15 @@ logger.log(`- DEBUG - Delay de ${delayBetweenTweets} segundos`);
 const botId = config.BOT_ID;
 
 limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
-  const tweetUserId = tweet.user.id_str;
-  const { filter_level } = tweet;
-  const userName = tweet.user.screen_name;
+  const { user } = tweet;
+  const { id_str: tweetUserId, screen_name: tweetUserName } = user;
 
   const now = +new Date();
   const differenceBetweenRequests = (now - lastRequestDate) / 1000;
+
+  if (differenceBetweenRequests < delayBetweenTweets) {
+    return;
+  }
 
   if (tweet.possibly_sensitive) {
     return;
@@ -42,18 +45,14 @@ limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
     return;
   }
 
-  if (userName === lastTweetUser) {
-    return;
-  }
-
-  if (differenceBetweenRequests < delayBetweenTweets) {
+  if (tweetUserName === lastTweetUser) {
     return;
   }
 
   try {
     const tweetId = tweet.id_str;
 
-    const tweetUrl = `https://twitter.com/${userName}/status/${tweetId}`;
+    const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
 
     await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
@@ -61,10 +60,10 @@ limitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
 
     lastRequestDate = +new Date();
     lastTweetId = tweetId;
-    lastTweetUser = userName;
+    lastTweetUser = tweetUserName;
 
     logger.log(
-      `- LIMITED STREAM - DEBUG - [${filter_level}] - ${tweetUrl} tweet feito com sucesso`
+      `- LIMITED STREAM - DEBUG - ${tweetUrl} tweet feito com sucesso`
     );
     return;
   } catch (e) {
