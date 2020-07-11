@@ -53,7 +53,7 @@ A simple logger to help find what's is going on with the bot.
 E.g: `[2020-07-11T01:52:11.669Z] - UNLIMITED - https://twitter.com/BotSaudades/status/1281767641368211456 tweet feito com sucesso`
 
   ## Contributing
-   - Fork this repo;
-   - Make the needed change;
-   - Setup a pull request;
+   - Fork this repo
+   - Make the needed change
+   - Setup a pull request
    - Wait for approval =)
