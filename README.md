@@ -2,7 +2,24 @@
 
 This is the official repo of the [SaudadesBot](https://twitter.com/BotSaudades). Below i'll explain how it works :arrow_down:
 
-#### Actual repo structure
+## How to run the bot
+
+> You need to copy `.env.example` to `.env` and fill with the needed data
+
+#### Start the app with nodemon
+> yarn start-dev
+
+#### Generate the build(this will delete the build folder)
+> yarn build
+
+#### Start the app from the build files
+> yarn start
+
+#### Lint code
+> yarn lint
+
+
+### Actual repo structure
 ```
 saudades-bot
  ├── .env.example
