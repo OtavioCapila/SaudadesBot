@@ -1,84 +1,64 @@
-import { UpdatedTwitterStatus } from '../types';
-import config from './../config/environment';
-import logger from '../logger';
-import bot from '../bot';
+import { UpdatedTwitterStatus } from "../types";
+import config from "./../config/environment";
+import logger from "../logger";
+import bot from "../bot";
+import isValidTweet from "../utils/validateTweet";
+import setupListeners from "../utils/setupListeners";
 
-const unlimitedStream = bot.stream('statuses/filter', {
-  track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
-  result_type: 'recent',
+/**
+ * @see
+ * https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter
+ */
+const unlimitedStream = bot.stream("statuses/filter", {
+  track: ["#SaudadesBot", "@BotSaudades", "#saudades"],
+  result_type: "recent",
 });
+
+const streamType = "UNLIMITED STREAM";
 
 const botId = config.BOT_ID;
 
 const delay = 1200; // 20 minutes
 
-let lastRequestDate: number;
-let lastTweetUser: string;
+let lastTweetDate: number;
+let lastTweetId: string;
 
-unlimitedStream.on('tweet', async (tweet: UpdatedTwitterStatus) => {
+unlimitedStream.on("tweet", async (tweet: UpdatedTwitterStatus) => {
   const { user, id_str: tweetId } = tweet;
-  const { id_str: tweetUserId, screen_name: tweetUserName } = user;
+  const { screen_name: tweetUserName } = user;
 
   const tweetUrl = `https://twitter.com/${tweetUserName}/status/${tweetId}`;
 
-  const now = +new Date();
-  const differenceBetweenRequests = (now - lastRequestDate) / 1000;
-
-  if (differenceBetweenRequests < delay) {
-    return;
-  }
-
-  if (tweetUserId === botId) {
-    return;
-  }
-
-  if (tweetUserName === lastTweetUser) {
-    return;
-  }
-
-  if (tweet.is_quote_status) {
-    return;
-  }
-
-  if (tweet.possibly_sensitive) {
-    return;
-  }
-
-  if (tweet.in_reply_to_status_id) {
+  if (
+    !isValidTweet({
+      botId,
+      tweet,
+      delay,
+      lastTweetDate,
+      lastTweetId,
+      streamType: "unlimited",
+    })
+  ) {
     return;
   }
 
   try {
-    await bot.post('statuses/update', {
+    await bot.post("statuses/update", {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
 
-    lastTweetUser = tweetUserName;
+    lastTweetDate = +new Date();
+    lastTweetId = tweetId;
 
-    logger.log(
-      `- UNLIMITED STREAM - DEBUG - ${tweetUrl} tweet feito com sucesso`
-    );
+    logger.log(`- ${streamType} - ${tweetUrl} tweet feito com sucesso`);
     return;
   } catch (e) {
-    logger.error(`- ERROR - ${e}`);
+    logger.error(e);
   }
 });
 
-unlimitedStream.on('disconnect', (disconnectMessage) => {
-  logger.error(
-    `- UNLIMITED STREAM - ERROR - Desconectado - ${disconnectMessage}`
-  );
-  unlimitedStream.start();
-});
-
-unlimitedStream.on('connect', () => {
-  logger.log(`- UNLIMITED STREAM - DEBUG - Conectando`);
-});
-
-unlimitedStream.on('connected', () => {
-  logger.log(`- UNLIMITED STREAM - DEBUG - Conectado`);
-});
-
-unlimitedStream.on('warning', (warning) => {
-  logger.warn(`- UNLIMITED STREAM - WARN - ${warning}`);
-});
+/**
+ * Setup listeners
+ * Just to see what's going on =)
+ */
+setupListeners(unlimitedStream,'UNLIMITED');
