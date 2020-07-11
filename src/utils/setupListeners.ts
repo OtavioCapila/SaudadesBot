@@ -1,7 +1,10 @@
 import { Stream } from "twit";
 import logger from "../logger";
 
-const setupListeners = (stream: Stream, type: "UNLIMITED" | "LIMITED") => {
+const setupListeners = (
+  stream: Stream,
+  type: "UNLIMITED" | "LIMITED"
+): void => {
   stream.on("disconnect", (disconnectMessage: string) => {
     logger.error(`- ${type} - Desconectado - ${disconnectMessage}`);
     stream.start();
