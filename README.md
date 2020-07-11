@@ -49,7 +49,7 @@ Here is where the magic happens. We have 2 types of streams, `LIMITED` and `UNLI
   - `validateTweet.ts` all the logic to determine if the bot must create a new tweet or not;
 
 #### `src > logger`
-A simple logger to help find what's is going on with the bot. `
+A simple logger to help find what's is going on with the bot.
 E.g: `[2020-07-11T01:52:11.669Z] - UNLIMITED - https://twitter.com/BotSaudades/status/1281767641368211456 tweet feito com sucesso`
 
   ## Contributing
