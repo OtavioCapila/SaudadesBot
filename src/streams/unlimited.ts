@@ -1,20 +1,21 @@
-import { UpdatedTwitterStatus } from "../types";
-import config from "./../config/environment";
-import logger from "../logger";
-import bot from "../bot";
-import isValidTweet from "../utils/validateTweet";
-import setupListeners from "../utils/setupListeners";
+import { Twitter } from 'twit';
+
+import config from './../config/environment';
+import logger from '../logger';
+import bot from '../bot';
+import isValidTweet from '../utils/validateTweet';
+import setupListeners from '../utils/setupListeners';
 
 /**
  * @see
  * https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference/post-statuses-filter
  */
-const unlimitedStream = bot.stream("statuses/filter", {
-  track: ["#SaudadesBot", "@BotSaudades", "#saudades"],
-  result_type: "recent",
+const unlimitedStream = bot.stream('statuses/filter', {
+  track: ['#SaudadesBot', '@BotSaudades', '#saudades'],
+  result_type: 'recent',
 });
 
-const streamType = "UNLIMITED STREAM";
+const streamType = 'UNLIMITED STREAM';
 
 const botId = config.BOT_ID;
 
@@ -23,7 +24,7 @@ const delay = 1200; // 20 minutes
 let lastTweetDate: number;
 let lastTweetId: string;
 
-unlimitedStream.on("tweet", async (tweet: UpdatedTwitterStatus) => {
+unlimitedStream.on('tweet', async (tweet: Twitter.Status) => {
   const { user, id_str: tweetId } = tweet;
   const { screen_name: tweetUserName } = user;
 
@@ -36,14 +37,14 @@ unlimitedStream.on("tweet", async (tweet: UpdatedTwitterStatus) => {
       delay,
       lastTweetDate,
       lastTweetId,
-      streamType: "unlimited",
+      streamType: 'unlimited',
     })
   ) {
     return;
   }
 
   try {
-    await bot.post("statuses/update", {
+    await bot.post('statuses/update', {
       status: `Saudades né minha filha? ${tweetUrl}`,
     });
 
@@ -61,4 +62,4 @@ unlimitedStream.on("tweet", async (tweet: UpdatedTwitterStatus) => {
  * Setup listeners
  * Just to see what's going on =)
  */
-setupListeners(unlimitedStream,'UNLIMITED');
+setupListeners(unlimitedStream, 'UNLIMITED');

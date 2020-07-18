@@ -1,12 +1,12 @@
-import { UpdatedTwitterStatus } from "../types";
-import config from "../config/environment";
+import { Twitter } from 'twit';
+import config from '../config/environment';
 
 interface ValidateTweetProps {
-  streamType: "unlimited" | "limited";
+  streamType: 'unlimited' | 'limited';
   botId: string;
   lastTweetId: string;
   lastTweetDate: number;
-  tweet: UpdatedTwitterStatus;
+  tweet: Twitter.Status;
   delay?: number;
 }
 
@@ -47,7 +47,7 @@ const validateTweet = ({
     return false;
   }
 
-  if (streamType === "unlimited" && tweet.is_quote_status) {
+  if (streamType === 'unlimited' && tweet.is_quote_status) {
     return false;
   }
 
